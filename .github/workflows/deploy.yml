@@ -31,6 +31,6 @@ jobs:
             git pull origin main
             npm install
             # Usar PM2 para iniciar/reiniciar el servidor
-            pm2 start app.mjs --name "Program02" || pm2 restart "Program02"
+            pm2 start Program02.mjs --name "Program02" || pm2 restart "Program02"
             pm2 save
           EOF
