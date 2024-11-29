@@ -1,36 +1,39 @@
-name: Deploy to EC2
+name: Deploy Docker App to EC2
 
 on:
   push:
     branches:
-      - main
+      - main # Ejecutar el deploy al hacer push en la rama main
 
 jobs:
   deploy:
-    name: Deploy to EC2
+    name: Deploy Docker App to EC2
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout del código fuente
+      # 1. Checkout del código fuente
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Configurar el acceso SSH
+      # 2. Configurar el acceso SSH
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ec2-54-90-65-157.compute-1.amazonaws.com >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Desplegar el código en la instancia EC2
-      - name: Deploy to EC2
+      # 3. Conectar a EC2 y realizar el despliegue
+      - name: Deploy Docker App
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@ec2-54-90-65-157.compute-1.amazonaws.com << 'EOF'
-            cd /home/ubuntu/Practice03_Actions
-            git pull origin main
-            npm install
-            # Usar PM2 para iniciar/reiniciar el servidor
-            pm2 start Program02.mjs --name "Practice03" || pm2 restart "Practice03"
-            pm2 save
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          # Descargar la última imagen Docker desde Docker Hub
+          docker pull usuario/mi-aplicacion:latest
+          
+          # Detener y eliminar el contenedor anterior (si existe)
+          docker stop mi-aplicacion || true
+          docker rm mi-aplicacion || true
+          
+          # Ejecutar el nuevo contenedor
+          docker run -d --name mi-aplicacion -p 80:80 usuario/mi-aplicacion:latest
           EOF
