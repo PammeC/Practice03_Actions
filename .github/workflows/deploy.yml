@@ -36,4 +36,4 @@ jobs:
           
           # Ejecutar el nuevo contenedor
           docker run -d --name mi-aplicacion -p 80:80 usuario/mi-aplicacion:latest
-          EOF
+          EOF 
