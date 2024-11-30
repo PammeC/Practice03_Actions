@@ -65,7 +65,7 @@ jobs:
 
             # Descargar la última imagen y ejecutar el contenedor
             sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hello-service:latest
-            sudo docker run -d --name hello-service -p 8081:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/hello-service:latest
+            sudo docker run -d --name hello-service -p 8081:5000 ${{ secrets.DOCKER_HUB_USERNAME }}/hello-service:latest
 
             # Limpiar imágenes no utilizadas
             sudo docker image prune -af
